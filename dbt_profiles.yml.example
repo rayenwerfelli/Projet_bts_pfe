@@ -1,0 +1,31 @@
+# ============================================================
+# dbt profiles.yml — TEMPLATE
+#
+# dbt does NOT read this from inside the project folder.
+# You must copy this file to your dbt profiles directory:
+#
+#   Windows:  C:\Users\<you>\.dbt\profiles.yml
+#   Mac/Linux: ~/.dbt/profiles.yml
+#
+# If that folder/file doesn't exist yet, create it.
+# The profile name below ("dw_bts_project") MUST match the
+# `profile:` value in dw_bts_project/dbt_project.yml.
+# ============================================================
+
+dw_bts_project:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: localhost
+      port: 5432
+      user: postgres
+      # Replace with your local PostgreSQL password
+      password: "YOUR_POSTGRES_PASSWORD"
+      dbname: Projet_bts
+      # dbt needs a default schema to write its non-source models to.
+      # Your dbt_project.yml already overrides the schema per folder
+      # (staging, intermediate, dwh...), so this is just the fallback.
+      schema: public
+      threads: 4
+      keepalives_idle: 0

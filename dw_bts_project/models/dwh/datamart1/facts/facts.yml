@@ -1,0 +1,193 @@
+version: 2
+
+models:
+
+  - name: fact_demande_financement
+    description: >
+      Fait demande de financement. Grain : 1 ligne = 1 demande.
+      Contient uniquement des mesures brutes.
+      Pas de KPIs calculés (txfdr, txamg, age → dans mart_).
+    columns:
+      - name: demande_key
+        description: "Surrogate key demande"
+        tests:
+          - not_null
+          - unique
+      - name: numdmg
+        description: "Numéro demande naturel"
+        tests:
+          - not_null
+          - unique
+      - name: client_key
+        description: "FK → dim_client"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_client')
+              field: client_key
+      - name: unite_key
+        description: "FK → dim_unite"
+        tests:
+          - relationships:
+              to: ref('dim_unite')
+              field: unite_key
+              config:
+                severity: warn
+      - name: tepdmg
+        description: "Montant total projet demandé brut"
+      - name: mntpropequip
+        description: "Montant proposé équipement"
+        tests:
+          - not_null
+      - name: mntpropfdr
+        description: "Montant proposé FDR"
+        tests:
+          - not_null
+      - name: mntpropamnag
+        description: "Montant proposé aménagement"
+        tests:
+          - not_null
+      - name: cout_projet_acc
+        description: "Coût total projet accordé"
+        tests:
+          - not_null
+      - name: mntacc_cmt
+        description: "Montant accordé CMT"
+        tests:
+          - not_null
+      - name: comdmg
+        description: "Commission demande brute"
+      - name: tvadmg
+        description: "TVA demande brute"
+      - name: dureedde
+        description: "Durée totale crédit en mois"
+      - name: natdmp
+        description: "Nature projet brut 1/2"
+      - name: nepdmp
+        description: "Nombre emplois brut"
+      - name: etadmg
+        description: "Etat demande brut"
+        tests:
+          - not_null
+      - name: datdmg
+        description: "Date demande"
+        tests:
+          - not_null
+
+  - name: fact_recouvrement_client
+    description: >
+      Fait recouvrement par client. Grain : 1 ligne = 1 client.
+      Mesures brutes uniquement.
+      KPIs mntechu, mntencourseff → dans mart_recouvrement_client.
+    columns:
+      - name: client_key
+        description: "FK → dim_client"
+        tests:
+          - not_null
+          - unique
+          - relationships:
+              to: ref('dim_client')
+              field: client_key
+      - name: codclt
+        description: "Code client naturel"
+        tests:
+          - not_null
+          - unique
+      - name: mntechupay
+        description: "Montant échu payé total"
+        tests:
+          - not_null
+      - name: mntechuimpay
+        description: "Montant échu impayé total"
+        tests:
+          - not_null
+      - name: mntechuenattregl
+        description: "Montant échu en attente règlement"
+        tests:
+          - not_null
+      - name: mntannul
+        description: "Montant annulé"
+        tests:
+          - not_null
+      - name: mntaechoir
+        description: "Montant à échoir"
+        tests:
+          - not_null
+      - name: mntaechoirprinc
+        description: "Montant à échoir principal"
+        tests:
+          - not_null
+      - name: nbrechimpprinc
+        description: "Nombre échéances impayées principal"
+        tests:
+          - not_null
+
+  - name: fact_recouvrement_zac
+    description: >
+      Fait recouvrement par ZAC. Grain : 1 ligne = 1 ZAC.
+      Mesures brutes uniquement.
+      KPI txrecovnat → dans mart_recouvrement_zac.
+    columns:
+      - name: zac_key
+        description: "FK → dim_zac"
+        tests:
+          - not_null
+          - unique
+          - relationships:
+              to: ref('dim_zac')
+              field: zac_key
+      - name: codzac
+        description: "Code ZAC naturel"
+        tests:
+          - not_null
+          - unique
+      - name: mntechupay
+        description: "Montant échu payé"
+        tests:
+          - not_null
+      - name: mntechuimpay
+        description: "Montant échu impayé"
+        tests:
+          - not_null
+      - name: mntechuenattregl
+        description: "Montant en attente règlement"
+        tests:
+          - not_null
+
+  - name: fact_recouvrement_gov
+    description: >
+      Fait recouvrement par ZAC + Gouvernorat.
+      Grain : 1 ligne = 1 ZAC + 1 GOV.
+      Mesures brutes uniquement.
+      KPI txrecouvreg → dans mart_recouvrement_gov.
+    columns:
+      - name: zac_key
+        description: "FK → dim_zac"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_zac')
+              field: zac_key
+      - name: gouvernorat_key
+        description: "FK → dim_gouvernorat"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_gouvernorat')
+              field: gouvernorat_key
+      - name: codzac
+        description: "Code ZAC"
+        tests:
+          - not_null
+      - name: codgov
+        description: "Code gouvernorat"
+        tests:
+          - not_null
+      - name: mntechupay
+        description: "Montant échu payé"
+        tests:
+          - not_null
+      - name: mntechuimpay
+        description: "Montant échu impayé"
+        tests:
+          - not_null

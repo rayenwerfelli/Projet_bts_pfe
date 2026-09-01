@@ -1,0 +1,116 @@
+version: 2
+
+snapshots:
+  - name: snap_hist_dmg
+    columns:
+      - name: numdmg
+        tests:
+          - not_null
+
+  - name: snap_hist_clt
+    columns:
+      - name: codclt
+        tests:
+          - not_null
+
+  - name: snap_hist_unt
+    columns:
+      - name: codunt
+        tests:
+          - not_null
+
+  - name: snap_hist_dmy
+    columns:
+      - name: coddmy
+        tests:
+          - not_null
+
+  - name: snap_hist_dmx
+    columns:
+      - name: coddmx
+        tests:
+          - not_null
+
+  - name: snap_hist_hsf
+    columns:
+      - name: numhsf
+        tests:
+          - not_null
+
+  - name: snap_hist_hmf
+    columns:
+      - name: codhmf
+        tests:
+          - not_null
+
+  - name: snap_hist_dmc
+    columns:
+      - name: sudmc
+        tests:
+          - not_null
+
+  - name: snap_hist_eng
+    columns:
+      - name: codeng
+        tests:
+          - not_null
+
+  - name: snap_hist_eff
+    columns:
+      - name: sueff
+        tests:
+          - not_null
+
+  - name: snap_hist_imp
+    columns:
+      - name: suimp
+        tests:
+          - not_null
+
+  - name: snap_hist_prj
+    columns:
+      - name: codprj
+        tests:
+          - not_null
+
+  - name: snap_hist_dmp
+    columns:
+      - name: sudmp
+        tests:
+          - not_null
+
+  - name: snap_hist_zac
+    columns:
+      - name: codzac
+        tests:
+          - not_null
+
+  - name: snap_hist_gov
+    columns:
+      - name: codgov
+        tests:
+          - not_null
+
+  - name: snap_hist_dlg
+    columns:
+      - name: coddlg
+        tests:
+          - not_null
+
+  - name: snap_hist_loc
+    columns:
+      - name: codloc
+        tests:
+          - not_null
+
+  - name: snap_hist_nis
+    columns:
+      - name: codnis
+        tests:
+          - not_null
+
+  - name: snap_hist_emp
+    columns:
+      - name: matemp
+        tests:
+          - not_null

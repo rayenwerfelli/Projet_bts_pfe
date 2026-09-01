@@ -1,0 +1,59 @@
+/* ── Variables thème Blanc & Rouge ─────────────────────────── */
+:root {
+  --red-primary:   #C0392B;
+  --red-dark:      #922B21;
+  --red-light:     #FADBD8;
+  --red-pale:      #FEF9F9;
+  --white:         #FFFFFF;
+  --gray-50:       #F8F9FA;
+  --gray-100:      #F1F3F5;
+  --gray-200:      #E9ECEF;
+  --gray-400:      #ADB5BD;
+  --gray-600:      #6C757D;
+  --gray-800:      #343A40;
+  --gray-900:      #212529;
+  --shadow-sm:     0 1px 3px rgba(0,0,0,0.08);
+  --shadow-md:     0 4px 12px rgba(0,0,0,0.10);
+  --shadow-lg:     0 8px 24px rgba(0,0,0,0.12);
+  --radius-sm:     6px;
+  --radius-md:     10px;
+  --radius-lg:     16px;
+  --radius-xl:     24px;
+  --font:          'Inter', sans-serif;
+  --transition:    0.2s ease;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  background: var(--gray-50);
+  color: var(--gray-900);
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Scrollbar custom */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--gray-200); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: var(--gray-400); }
+
+/* ── Animations ─────────────────────────────────────────────── */
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.fade-in {
+  animation: fadeSlideUp 0.3s ease forwards;
+}

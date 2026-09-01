@@ -1,0 +1,12 @@
+# Core data pipeline dependencies
+pandas
+psycopg2-binary
+sqlalchemy
+xlrd
+xlwt
+openpyxl
+dbt-postgres
+clickhouse-driver
+clickhouse-connect
+authlib
+python-dotenv

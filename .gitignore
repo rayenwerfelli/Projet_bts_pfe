@@ -1,0 +1,13 @@
+﻿.env
+*.env
+.venv/
+venv/
+__pycache__/
+*.pyc
+node_modules/
+dw_bts_project/dbt_packages/
+dw_bts_project/target/
+*.db
+Thumbs.db
+data/raw/
+logs/

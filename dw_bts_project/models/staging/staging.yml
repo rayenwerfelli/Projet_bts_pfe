@@ -1,0 +1,210 @@
+version: 2
+
+models:
+
+  - name: stg_dmg
+    description: "Staging des demandes de financement depuis ODS.DMG. Cast + nettoyage uniquement."
+    columns:
+      - name: numdmg
+        description: "Numéro unique de la demande"
+        tests:
+          - not_null
+          - unique
+      - name: sudmg
+        description: "Statut suppression (0 = actif)"
+        tests:
+          - not_null
+      - name: datdmg
+        description: "Date de la demande"
+        tests:
+          - not_null
+      - name: etadmg
+        description: "Etat de la demande (0-9)"
+        tests:
+          - not_null
+          - accepted_values:
+              values: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+      - name: tepdmg
+        description: "Montant total projet demandé"
+      - name: codcltdmg
+        description: "Code client lié à la demande"
+        tests:
+          - not_null
+
+  - name: stg_clt
+    description: "Staging des clients depuis ODS.CLT. Cast + nettoyage + normalisation sexclt."
+    columns:
+      - name: codclt
+        description: "Code unique du client"
+        tests:
+          - not_null
+          - unique
+      - name: nomclt
+        description: "Nom du client en majuscules"
+        tests:
+          - not_null
+      - name: sexclt
+        description: "Sexe normalisé M/F (défaut M)"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['M', 'F']
+      - name: stfclt
+        description: "Situation familiale brute C/M/D/V"
+        tests:
+          - accepted_values:
+              values: ['C', 'M', 'D', 'V']
+              config:
+                severity: warn
+      - name: dnaclt
+        description: "Date de naissance du client"
+      - name: tidnclt
+        description: "Type identifiant national"
+
+  - name: stg_hsf
+    description: "Staging des montants de financement depuis ODS.HSF."
+    columns:
+      - name: numdmghsf
+        description: "Numéro demande liée"
+        tests:
+          - not_null
+      - name: codhrfhsf
+        description: "Code rubrique financement"
+        tests:
+          - not_null
+      - name: mnphsf
+        description: "Montant proposé brut"
+      - name: mnahsf
+        description: "Montant accordé brut"
+      - name: suhsf
+        description: "Statut suppression"
+        tests:
+          - not_null
+
+  - name: stg_dmc
+    description: "Staging des crédits proposés depuis ODS.DMC."
+    columns:
+      - name: numdmgdmc
+        description: "Numéro demande liée"
+        tests:
+          - not_null
+      - name: codenadmc
+        description: "Code engagement"
+        tests:
+          - not_null
+      - name: sudmc
+        description: "Statut suppression"
+        tests:
+          - not_null
+
+  - name: stg_eff
+    description: "Staging des effets/échéances depuis ODS.EFF."
+    columns:
+      - name: ordcpxeff
+        description: "Ordre compte lié"
+        tests:
+          - not_null
+      - name: codinseff
+        description: "Code instrument"
+      - name: typeff
+        description: "Type effet"
+      - name: ppleff
+        description: "Principal/intérêt (1=principal, 2=intérêt)"
+      - name: mnteff
+        description: "Montant effet brut"
+      - name: echeff
+        description: "Date échéance"
+      - name: drgleff
+        description: "Date règlement"
+
+  - name: stg_cpt
+    description: "Staging des comptes depuis ODS.CPT."
+    columns:
+      - name: ordcpt
+        description: "Ordre unique du compte"
+        tests:
+          - not_null
+          - unique
+      - name: codcltcpt
+        description: "Code client du compte"
+        tests:
+          - not_null
+
+  - name: stg_prj
+    description: "Staging des projets depuis ODS.PRJ."
+    columns:
+      - name: codprj
+        description: "Code unique projet"
+        tests:
+          - not_null
+          - unique
+      - name: codcltprj
+        description: "Code client du projet"
+        tests:
+          - not_null
+      - name: codzacprj
+        description: "Code ZAC du projet"
+      - name: codgovprj
+        description: "Code gouvernorat"
+
+  - name: stg_dmp
+    description: "Staging liaison demande-projet depuis ODS.DMP."
+    columns:
+      - name: numdmgdmp
+        description: "Numéro demande"
+        tests:
+          - not_null
+      - name: codprjdmp
+        description: "Code projet"
+        tests:
+          - not_null
+      - name: natdmp
+        description: "Nature projet brut (1=Création, 2=Extension)"
+      - name: nepdmp
+        description: "Nombre emplois brut"
+
+  - name: stg_zac
+    description: "Staging des zones d'activité depuis ODS.ZAC."
+    columns:
+      - name: codzac
+        description: "Code unique ZAC"
+        tests:
+          - not_null
+          - unique
+      - name: libzac
+        description: "Libellé ZAC"
+        tests:
+          - not_null
+      - name: seczac
+        description: "Code secteur brut A/S/I/B/M"
+        tests:
+          - accepted_values:
+              values: ['A', 'S', 'I', 'B', 'M']
+              config:
+                severity: warn
+
+  - name: stg_gov
+    description: "Staging des gouvernorats depuis ODS.GOV."
+    columns:
+      - name: codgov
+        description: "Code unique gouvernorat"
+        tests:
+          - not_null
+          - unique
+      - name: libgov
+        description: "Libellé gouvernorat"
+        tests:
+          - not_null
+
+  - name: stg_emp
+    description: "Staging des employés/décideurs depuis ODS.EMP."
+    columns:
+      - name: matemp
+        description: "Matricule unique employé"
+        tests:
+          - not_null
+          - unique
+      - name: nomemp
+        description: "Nom employé"
+        tests:
+          - not_null

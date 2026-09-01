@@ -1,0 +1,6 @@
+﻿content = open('clickhouse/etl_pg_to_clickhouse.py', 'r', encoding='utf-8').read()
+content = content.replace('("bts_datamart1", "bts_datamart1")', '("public_datamart1", "bts_datamart1")')
+content = content.replace('("bts_datamart3", "bts_datamart1")', '("public_datamart3", "bts_datamart1")')
+content = content.replace('("bts_datamart2", "bts_datamart1")', '("public_datamart2", "bts_datamart1")')
+open('clickhouse/etl_pg_to_clickhouse.py', 'w', encoding='utf-8').write(content)
+print('Patched')

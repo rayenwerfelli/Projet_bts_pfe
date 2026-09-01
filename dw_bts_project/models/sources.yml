@@ -1,0 +1,27 @@
+version: 2
+
+sources:
+  - name: ods
+    schema: ods
+    tables:
+      - name: CLT
+      - name: DMG
+      - name: UNT
+      - name: DMY
+      - name: DMX
+      - name: HMF
+      - name: NIS
+      - name: EMP
+      - name: HSF
+      - name: DMC
+      - name: ENG
+      - name: CPT
+      - name: EFF
+      - name: IMP
+      - name: PRJ
+      - name: DMP
+      - name: ZAC
+      - name: GOV
+      - name: DLG
+      - name: LOC
+  

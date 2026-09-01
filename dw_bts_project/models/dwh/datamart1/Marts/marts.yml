@@ -1,0 +1,190 @@
+version: 2
+
+models:
+
+  - name: mart_demande_financement
+    description: >
+      Mart principal suivi demandes financement.
+      Contient tous les KPIs calculés, libellés décodés et ratios.
+      Source pour Clickhouse et Superset.
+      Filtres métier : etadmg IN (6,7,8,9) ET dsddmg = 1 à appliquer dans Superset.
+    columns:
+      - name: demande_key
+        description: "Surrogate key demande"
+        tests:
+          - not_null
+          - unique
+      - name: numdmg
+        description: "Numéro demande"
+        tests:
+          - not_null
+          - unique
+      - name: lib_etat
+        description: "Libellé état demande décodé"
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                - 'Enregistré'
+                - 'En Etude'
+                - 'Transfert pour décision'
+                - 'Accord'
+                - 'Rejet'
+                - 'Réexaminer'
+                - 'Décision Prise'
+                - 'Client Notifié'
+                - 'Traitement Terminé'
+                - 'Annulé'
+      - name: lib_decision
+        description: "Libellé décision décodé"
+        tests:
+          - accepted_values:
+              values:
+                - 'Acceptée'
+                - 'Acceptée sous Réserve'
+                - 'Ajournée'
+                - 'Rejetée'
+              config:
+                severity: warn
+      - name: decision_agence
+        description: "Décision agence décodée"
+        tests:
+          - accepted_values:
+              values: ['Acceptation', 'Rejet']
+              config:
+                severity: warn
+      - name: nature_projet
+        description: "Nature projet décodée"
+        tests:
+          - accepted_values:
+              values: ['Création', 'Extension', 'Non renseigné']
+      - name: lib_sexe
+        description: "Libellé sexe client"
+        tests:
+          - accepted_values:
+              values: ['Masculin', 'Féminin']
+              config:
+                severity: warn
+      - name: lib_secteur
+        description: "Libellé secteur ZAC décodé"
+        tests:
+          - accepted_values:
+              values:
+                - 'Agriculture'
+                - 'Service'
+                - 'Industrie'
+                - 'Artisanat'
+                - 'Petits Métiers'
+              config:
+                severity: warn
+      - name: txfdr
+        description: "Taux FDR = mntpropfdr / tepdmg * 100"
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 100
+              config:
+                severity: warn
+      - name: txamg
+        description: "Taux aménagement = mntpropamnag / tepdmg * 100"
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 100
+              config:
+                severity: warn
+      - name: age
+        description: "Age client à la date transfert en années"
+        tests:
+          - dbt_utils.accepted_range:
+              min_value: 18
+              max_value: 100
+              config:
+                severity: warn
+      - name: cout_total
+        description: "Coût total accordé = somme de tous les mntacc_*"
+        tests:
+          - not_null
+
+  - name: mart_recouvrement_client
+    description: >
+      Mart recouvrement par client.
+      Contient KPIs mntechu, mntencourseff, tx_impaye_clt.
+    columns:
+      - name: client_key
+        description: "Surrogate key client"
+        tests:
+          - not_null
+          - unique
+      - name: codclt
+        description: "Code client"
+        tests:
+          - not_null
+          - unique
+      - name: mntechu
+        description: "Montant échu total = EnAttRegl + Impayé + Payé"
+        tests:
+          - not_null
+      - name: mntencourseff
+        description: "Montant en cours effectif = Impayé + EnAtt + AEchoirPrinc"
+        tests:
+          - not_null
+      - name: tx_impaye_clt
+        description: "Taux impayé client en %"
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 100
+
+  - name: mart_recouvrement_zac
+    description: >
+      Mart recouvrement par ZAC.
+      Contient KPIs mntechuparactiv, txrecovnat.
+    columns:
+      - name: zac_key
+        description: "Surrogate key ZAC"
+        tests:
+          - not_null
+          - unique
+      - name: codzac
+        description: "Code ZAC"
+        tests:
+          - not_null
+          - unique
+      - name: mntechuparactiv
+        description: "Montant échu total par activité ZAC"
+        tests:
+          - not_null
+      - name: txrecovnat
+        description: "Taux recouvrement national en %"
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 100
+
+  - name: mart_recouvrement_gov
+    description: >
+      Mart recouvrement par ZAC + Gouvernorat.
+      Contient KPIs mntechuparactivgov, txrecouvreg.
+    columns:
+      - name: zac_key
+        description: "FK → dim_zac"
+        tests:
+          - not_null
+      - name: gouvernorat_key
+        description: "FK → dim_gouvernorat"
+        tests:
+          - not_null
+      - name: mntechuparactivgov
+        description: "Montant échu total par gouvernorat"
+        tests:
+          - not_null
+      - name: txrecouvreg
+        description: "Taux recouvrement par gouvernorat en %"
+        tests:
+          - not_null
+          - dbt_utils.accepted_range:
+              min_value: 0
+              max_value: 100

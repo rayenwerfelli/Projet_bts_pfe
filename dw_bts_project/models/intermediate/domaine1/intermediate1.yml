@@ -1,0 +1,167 @@
+version: 2
+
+models:
+
+  - name: hist_dmg
+    description: "Historique SCD2 des demandes. Ajoute is_current pour filtrer la version active."
+    columns:
+      - name: numdmg
+        description: "Numéro demande"
+        tests:
+          - not_null
+      - name: is_current
+        description: "True = version active courante"
+        tests:
+          - not_null
+      - name: valid_from
+        description: "Date début validité"
+        tests:
+          - not_null
+      - name: valid_to
+        description: "Date fin validité (9999 = actif)"
+
+  - name: hist_clt
+    description: "Historique SCD2 des clients. Ajoute is_current."
+    columns:
+      - name: codclt
+        description: "Code client"
+        tests:
+          - not_null
+      - name: is_current
+        description: "True = version active courante"
+        tests:
+          - not_null
+
+  - name: int_hsf_agg
+    description: >
+      Agrégation des montants HSF par demande.
+      Contient montants proposés (mnphsf) et accordés (mnahsf).
+      Grain : 1 ligne par numdmg.
+    columns:
+      - name: numdmg
+        description: "Numéro demande"
+        tests:
+          - not_null
+          - unique
+      - name: mntpropequip
+        description: "Montant proposé équipement"
+        tests:
+          - not_null
+      - name: cout_projet_acc
+        description: "Coût total projet accordé (typhsf=1)"
+        tests:
+          - not_null
+
+  - name: int_dmc_agg
+    description: >
+      Agrégation des crédits proposés par demande.
+      Grain : 1 ligne par numdmg.
+    columns:
+      - name: numdmg
+        description: "Numéro demande"
+        tests:
+          - not_null
+          - unique
+      - name: nbrcrdpropaccor
+        description: "Nombre crédits proposés accordés"
+        tests:
+          - not_null
+      - name: codenadmc1
+        description: "Code engagement minimum"
+      - name: codenadmc2
+        description: "Code engagement maximum"
+      - name: dureedde
+        description: "Durée totale crédit en mois"
+
+  - name: int_v_effimp
+    description: >
+      Reproduction de la vue Oracle V_EFFIMP.
+      Union de EFF + IMP avec logique de recodage typeff.
+      Grain : 1 ligne par effet/impayé.
+    columns:
+      - name: ordcpxeff
+        description: "Ordre compte lié"
+        tests:
+          - not_null
+      - name: typeff
+        description: "Type effet recodé (1=AEchoir,2-3=EnAtt,6=Impayé,7=Annul,8-9=Payé)"
+        tests:
+          - not_null
+      - name: mnteff
+        description: "Montant effet calculé"
+        tests:
+          - not_null
+
+  - name: int_recap_recouv_par_clt
+    description: >
+      Recouvrement agrégé par client.
+      Grain : 1 ligne par codclt.
+      Contient uniquement des mesures brutes sans KPIs.
+    columns:
+      - name: codclt
+        description: "Code client"
+        tests:
+          - not_null
+          - unique
+      - name: mntechupay
+        description: "Montant échu payé total"
+        tests:
+          - not_null
+      - name: mntechuimpay
+        description: "Montant échu impayé total"
+        tests:
+          - not_null
+      - name: mntechuenattregl
+        description: "Montant échu en attente règlement"
+        tests:
+          - not_null
+      - name: mntaechoir
+        description: "Montant à échoir"
+        tests:
+          - not_null
+
+  - name: int_suiv_recouv_zac
+    description: >
+      Recouvrement agrégé par ZAC (niveau national).
+      Grain : 1 ligne par codzacprj.
+      Mesures brutes uniquement.
+    columns:
+      - name: codzacprj
+        description: "Code ZAC"
+        tests:
+          - not_null
+          - unique
+      - name: mntechupay
+        description: "Montant échu payé"
+        tests:
+          - not_null
+      - name: mntechuimpay
+        description: "Montant échu impayé"
+        tests:
+          - not_null
+
+  - name: int_suiv_recouv_zac_gov
+    description: >
+      Recouvrement agrégé par ZAC + Gouvernorat.
+      Grain : 1 ligne par codzacprj + codgovprj.
+      Mesures brutes uniquement.
+    columns:
+      - name: codzacprj
+        description: "Code ZAC"
+        tests:
+          - not_null
+      - name: codgovprj
+        description: "Code gouvernorat"
+        tests:
+          - not_null
+      - name: mntechupay
+        description: "Montant échu payé"
+        tests:
+          - not_null
+
+  - name: int_info_demande_der_projet
+    columns:
+      - name: codprj
+        tests:
+          - unique
+          - not_null

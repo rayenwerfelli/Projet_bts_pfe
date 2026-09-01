@@ -1,0 +1,334 @@
+version: 2
+
+models:
+
+  - name: dim_client
+    description: >
+      Dimension client. Attributs bruts uniquement.
+      Pas de libellés décodés (stfclt, sexclt, tidnclt restent en code).
+      Les libellés sont dans mart_demande_financement.
+    columns:
+      - name: client_key
+        description: "Surrogate key MD5(codclt)"
+        tests:
+          - not_null
+          - unique
+      - name: codclt
+        description: "Code client naturel"
+        tests:
+          - not_null
+          - unique
+      - name: nomclt
+        description: "Nom client en majuscules"
+        tests:
+          - not_null
+      - name: sexclt
+        description: "Sexe brut M/F"
+        tests:
+          - accepted_values:
+              values: ['M', 'F']
+      - name: stfclt
+        description: "Situation familiale brute C/M/D/V"
+      - name: tidnclt
+        description: "Type identifiant brut"
+      - name: dnaclt
+        description: "Date naissance"
+
+  - name: dim_demande
+    description: >
+      Dimension demande. Codes bruts état/décision uniquement.
+      Les libellés sont dans mart_demande_financement.
+    columns:
+      - name: demande_key
+        description: "Surrogate key MD5(numdmg)"
+        tests:
+          - not_null
+          - unique
+      - name: numdmg
+        description: "Numéro demande naturel"
+        tests:
+          - not_null
+          - unique
+      - name: etadmg
+        description: "Etat demande brut 0-9"
+        tests:
+          - not_null
+      - name: idcadmg
+        description: "Décision agence brute 1/2"
+      - name: tepdmg
+        description: "Montant total projet"
+
+  - name: dim_unite
+    description: "Dimension unité/agence."
+    columns:
+      - name: unite_key
+        description: "Surrogate key MD5(codunt)"
+        tests:
+          - not_null
+          - unique
+      - name: codunt
+        description: "Code unité"
+        tests:
+          - not_null
+          - unique
+      - name: libunt
+        description: "Libellé unité"
+        tests:
+          - not_null
+
+  - name: dim_employee
+    description: "Dimension employé/décideur."
+    columns:
+      - name: employe_key
+        description: "Surrogate key MD5(matemp)"
+        tests:
+          - not_null
+          - unique
+      - name: matemp
+        description: "Matricule employé"
+        tests:
+          - not_null
+          - unique
+      - name: nom_complet
+        description: "Prénom + Nom concaténés"
+        tests:
+          - not_null
+
+  - name: dim_zac
+    description: >
+      Dimension zone d'activité.
+      seczac reste en code brut A/S/I/B/M.
+      Le décodage lib_secteur est dans les marts.
+    columns:
+      - name: zac_key
+        description: "Surrogate key MD5(codzac)"
+        tests:
+          - not_null
+          - unique
+      - name: codzac
+        description: "Code ZAC"
+        tests:
+          - not_null
+          - unique
+      - name: libzac
+        description: "Libellé ZAC"
+        tests:
+          - not_null
+      - name: seczac
+        description: "Code secteur brut A/S/I/B/M"
+        tests:
+          - accepted_values:
+              values: ['A', 'S', 'I', 'B', 'M']
+              config:
+                severity: warn
+
+  - name: dim_gouvernorat
+    description: "Dimension gouvernorat."
+    columns:
+      - name: gouvernorat_key
+        description: "Surrogate key MD5(codgov)"
+        tests:
+          - not_null
+          - unique
+      - name: codgov
+        description: "Code gouvernorat"
+        tests:
+          - not_null
+          - unique
+      - name: libgov
+        description: "Libellé gouvernorat"
+        tests:
+          - not_null
+
+  - name: dim_delegation
+    description: "Dimension délégation. Clé composite GOV+DLG."
+    columns:
+      - name: delegation_key
+        description: "Surrogate key MD5(codgov-coddlg)"
+        tests:
+          - not_null
+          - unique
+      - name: codgovdlg
+        description: "Code gouvernorat"
+        tests:
+          - not_null
+      - name: coddlg
+        description: "Code délégation"
+        tests:
+          - not_null
+      - name: libdlg
+        description: "Libellé délégation"
+        tests:
+          - not_null
+
+  - name: dim_localite
+    description: "Dimension localité. Clé composite GOV+DLG+LOC."
+    columns:
+      - name: localite_key
+        description: "Surrogate key MD5(codgov-coddlg-codloc)"
+        tests:
+          - not_null
+          - unique
+      - name: libloc
+        description: "Libellé localité"
+        tests:
+          - not_null
+
+  - name: dim_type_demande
+    description: "Dimension type de demande (DMY)."
+    columns:
+      - name: type_demande_key
+        description: "Surrogate key MD5(coddmy)"
+        tests:
+          - not_null
+          - unique
+      - name: coddmy
+        description: "Code type demande"
+        tests:
+          - not_null
+          - unique
+      - name: libdmy
+        description: "Libellé type demande"
+        tests:
+          - not_null
+
+  - name: dim_origine_demande
+    description: "Dimension origine de demande (DMX)."
+    columns:
+      - name: origine_demande_key
+        description: "Surrogate key MD5(coddmx)"
+        tests:
+          - not_null
+          - unique
+      - name: coddmx
+        description: "Code origine demande"
+        tests:
+          - not_null
+          - unique
+
+  - name: dim_modele_sf
+    description: "Dimension modèle de financement (HMF)."
+    columns:
+      - name: modele_financement_key
+        description: "Surrogate key MD5(codhmf)"
+        tests:
+          - not_null
+          - unique
+      - name: codhmf
+        description: "Code modèle financement"
+        tests:
+          - not_null
+          - unique
+      - name: libhmf
+        description: "Libellé modèle"
+        tests:
+          - not_null
+
+  - name: dim_niveau_instruction
+    description: "Dimension niveau d'instruction (NIS)."
+    columns:
+      - name: niveau_instruction_key
+        description: "Surrogate key MD5(codnis)"
+        tests:
+          - not_null
+          - unique
+      - name: codnis
+        description: "Code niveau instruction"
+        tests:
+          - not_null
+          - unique
+      - name: libnis
+        description: "Libellé niveau brut complet"
+        tests:
+          - not_null
+
+  - name: dim_engagement
+    description: "Dimension engagement (ENG)."
+    columns:
+      - name: engagement_key
+        description: "Surrogate key MD5(codeng)"
+        tests:
+          - not_null
+          - unique
+      - name: codeng
+        description: "Code engagement"
+        tests:
+          - not_null
+          - unique
+      - name: libeng
+        description: "Libellé engagement"
+        tests:
+          - not_null
+
+  - name: dim_autorisation
+    description: "Dimension autorisation (AUT)."
+    columns:
+      - name: autorisation_key
+        description: "Surrogate key MD5(refaut)"
+        tests:
+          - not_null
+          - unique
+      - name: refaut
+        description: "Référence autorisation"
+        tests:
+          - not_null
+          - unique
+      - name: cloaut
+        description: "Etat autorisation brut 0-9"
+        tests:
+          - accepted_values:
+              values: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+              config:
+                severity: warn
+
+  - name: dim_classification_activite
+    description: >
+      Dimension hiérarchie classification activité.
+      5 niveaux : ZCL → ZGR → ZDV → ZSS → ZSC.
+    columns:
+      - name: classif_activite_key
+        description: "Surrogate key MD5(niveaux concaténés)"
+        tests:
+          - not_null
+          - unique
+      - name: codactivclass
+        description: "Code classe activité niveau 1"
+      - name: activclass
+        description: "Libellé classe activité"
+      - name: codactivsection
+        description: "Code section activité niveau 5"
+
+  - name: dim_date
+    description: >
+      Dimension date générée depuis les dates de hist_dmg.
+      Contient toutes les décompositions temporelles.
+    columns:
+      - name: date_key
+        description: "Clé YYYYMMDD entier"
+        tests:
+          - not_null
+          - unique
+      - name: date_jour
+        description: "Date valeur"
+        tests:
+          - not_null
+          - unique
+      - name: annee
+        description: "Année"
+        tests:
+          - not_null
+      - name: mois
+        description: "Mois 1-12"
+        tests:
+          - not_null
+          - accepted_values:
+              values: [1,2,3,4,5,6,7,8,9,10,11,12]
+      - name: trimestre
+        description: "Trimestre 1-4"
+        tests:
+          - accepted_values:
+              values: [1, 2, 3, 4]
+      - name: is_weekend
+        description: "True si samedi ou dimanche"
+        tests:
+          - not_null

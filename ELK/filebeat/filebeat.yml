@@ -1,0 +1,104 @@
+filebeat.inputs:
+  - type: log
+    id: python-logs
+    enabled: true
+    paths:
+      - /host_logs/python/*.log
+    fields:
+      service: python
+      source_type: file
+    fields_under_root: true
+    multiline.pattern: '^\d{4}-\d{2}-\d{2}'
+    multiline.negate: true
+    multiline.match: after
+    tags: ["python"]
+
+  - type: log
+    id: dbt-logs
+    enabled: true
+    paths:
+      - /host_logs/dbt/dbt.log
+      - /host_logs/dbt/dbt.log.*
+    fields:
+      service: dbt
+      source_type: file
+    fields_under_root: true
+    multiline.pattern: '^\d{4}-\d{2}-\d{2}'
+    multiline.negate: true
+    multiline.match: after
+    tags: ["dbt"]
+
+  - type: log
+    id: postgres-logs
+    enabled: true
+    paths:
+      - /host_logs/postgres/*.log
+    fields:
+      service: postgres
+      source_type: file
+    fields_under_root: true
+    multiline.pattern: '^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}'
+    multiline.negate: true
+    multiline.match: after
+    tags: ["postgres"]
+
+filebeat.autodiscover:
+  providers:
+    - type: docker
+      hints.enabled: true
+      templates:
+        - condition:
+            contains:
+              docker.container.image: "clickhouse/clickhouse-server"
+          config:
+            - type: container
+              paths:
+                - /var/lib/docker/containers/${data.docker.container.id}/*.log
+              fields:
+                service: clickhouse
+                source_type: docker
+              fields_under_root: true
+              tags: ["clickhouse", "docker"]
+
+        - condition:
+            contains:
+              docker.container.image: "projet_bts_pfe-superset"
+          config:
+            - type: container
+              paths:
+                - /var/lib/docker/containers/${data.docker.container.id}/*.log
+              fields:
+                service: superset
+                source_type: docker
+              fields_under_root: true
+              tags: ["superset", "docker"]
+
+        - condition:
+            contains:
+              docker.container.image: "quay.io/keycloak/keycloak"
+          config:
+            - type: container
+              paths:
+                - /var/lib/docker/containers/${data.docker.container.id}/*.log
+              fields:
+                service: keycloak
+                source_type: docker
+              fields_under_root: true
+              tags: ["keycloak", "docker"]
+
+processors:
+  - add_docker_metadata:
+      host: "unix:///var/run/docker.sock"
+  - add_host_metadata:
+      when.not.contains.tags: forwarded
+  - drop_fields:
+      fields: ["agent.ephemeral_id", "ecs.version"]
+      ignore_missing: true
+
+output.logstash:
+  hosts: ["logstash_bi:5044"]
+  compression_level: 3
+  bulk_max_size: 2048
+
+logging.level: info
+monitoring.enabled: false

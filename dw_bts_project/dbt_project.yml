@@ -1,0 +1,63 @@
+name: 'dw_bts_project'
+version: '1.0.0'
+config-version: 2
+
+profile: 'dw_bts_project'
+
+model-paths: ['models']
+
+target-path: 'target'
+clean-targets:
+  - 'target'
+  - 'dbt_packages'
+
+models:
+  dw_bts_project:
+
+    staging:
+      +schema: staging
+      +materialized: table
+
+    intermediate:
+      +schema: intermediate
+      +materialized: view
+
+    dwh:
+
+      datamart1:
+        +schema: datamart1
+        +materialized: table
+        dimensions:
+          +tags: ['dimension']
+        facts:
+          +tags: ['fact']
+
+      datamart2:
+        +schema: datamart2
+        +materialized: table
+        dimensions:
+          +tags: ['dimension', 'req4']
+        facts:
+          +tags: ['fact', 'req4']
+        mart:
+          +tags: ['mart', 'req4']
+        refs:
+          +tags: ['ref', 'req4']
+
+      datamart3:                      # ← renommé : plus de duplicate
+        +schema: datamart3
+        +materialized: table
+        dimensions:
+          +tags: ['dimension', 'dom3']
+        facts:
+          +tags: ['fact', 'dom3']
+        marts:
+          +tags: ['mart', 'dom3']
+
+    marts:
+      +schema: mart
+      +materialized: table
+
+snapshots:
+  dw_bts_project:
+    +schema: history

@@ -1,0 +1,5 @@
+FROM apache/superset:latest
+USER root
+RUN /app/.venv/bin/python -m ensurepip --upgrade
+RUN /app/.venv/bin/python -m pip install clickhouse-connect authlib
+USER superset

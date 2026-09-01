@@ -1,0 +1,83 @@
+name: CI - BTS PFE Data Platform
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+
+  dbt-lint:
+    name: Validation dbt
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Pythonllllllllllllllll
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Vérifier les fichiers YAML dbt
+        run: |
+          pip install pyyaml
+          python -c "
+          import yaml, os, sys
+          errors = []
+          for root, dirs, files in os.walk('dw_bts_project/models'):
+              for f in files:
+                  if f.endswith('.yml'):
+                      path = os.path.join(root, f)
+                      try:
+                          yaml.safe_load(open(path))
+                      except Exception as e:
+                          errors.append(f'{path}: {e}')
+          if errors:
+              print('ERREURS YAML:')
+              [print(e) for e in errors]
+              sys.exit(1)
+          print('OK Tous les fichiers YAML sont valides')
+          "
+
+      - name: Vérifier dbt_project.yml existe
+        run: |
+          test -f dw_bts_project/dbt_project.yml && echo "OK dbt_project.yml present" || exit 1
+
+      - name: Compter les fichiers SQL dbt
+        run: |
+          count=$(find dw_bts_project/models -name "*.sql" | wc -l)
+          echo "OK $count fichiers SQL trouves"
+
+  python-lint:
+    name: Validation Python
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Installer flake8
+        run: pip install flake8
+
+      - name: Lint Python
+        run: |
+          flake8 clickhouse/ extraction/ data_quality/ \
+            --max-line-length=120 \
+            --select=E9,F63,F7,F82 \
+            --show-source
+          echo "OK Pas d erreurs Python critiques"
+
+  docker-validate:
+    name: Validation Docker Compose
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Valider docker-compose.yml
+        run: |
+          docker compose config --quiet
+          echo "OK docker-compose.yml valide"
